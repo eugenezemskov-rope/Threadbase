@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════
+   ThreadBase Design System — Design Tokens
+   ═══════════════════════════════════════════════ */
+
+/* ── Fonts ── */
+
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Ultralight.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Ultralight.woff') format('woff');
+  font-weight: 200;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Light.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Light.woff') format('woff');
+  font-weight: 300;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Regular.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Regular.woff') format('woff');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Medium.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Medium.woff') format('woff');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Bold.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Bold.woff') format('woff');
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Ultrabold.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Ultrabold.woff') format('woff');
+  font-weight: 800;
+}
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('/fonts/Neue Machina/NeueMachina-Black.woff2') format('woff2'),
+       url('/fonts/Neue Machina/NeueMachina-Black.woff') format('woff');
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Intel One Mono';
+  src: url('/fonts/Intel_One_Mono/IntelOneMono-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Intel One Mono';
+  src: url('/fonts/Intel_One_Mono/IntelOneMono-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
+/* ── Tokens ── */
+
+:root {
+
+  /* ─────────────────────────────
+     BRAND
+  ───────────────────────────── */
+  --brand-primary:        #C5E846;
+  --brand-primary-hover:  #D4F25A;
+  --brand-primary-muted:  rgba(197, 232, 70, 0.12);
+  --brand-primary-text:   #0A0A0A;   /* text on brand-primary bg */
+
+
+  /* ─────────────────────────────
+     BACKGROUNDS
+  ───────────────────────────── */
+  --bg-base:       #111111;   /* page root */
+  --bg-primary:    #1C1C1E;   /* main content area */
+  --bg-secondary:  #242426;   /* cards, nodes, inputs */
+  --bg-elevated:   #2C2C2E;   /* dropdowns, tooltips, hover states */
+  --bg-overlay:    #323234;   /* overlay cards, deep hover */
+  --bg-sidebar:    #161618;   /* left sidebar */
+
+
+  /* ─────────────────────────────
+     BORDERS
+  ───────────────────────────── */
+  --border-subtle:   rgba(255, 255, 255, 0.05);
+  --border-default:  rgba(255, 255, 255, 0.09);
+  --border-strong:   rgba(255, 255, 255, 0.16);
+  --border-focus:    var(--brand-primary);
+
+
+  /* ─────────────────────────────
+     TEXT
+  ───────────────────────────── */
+  --text-primary:   #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.68);
+  --text-tertiary:  rgba(255, 255, 255, 0.34);
+  --text-disabled:  rgba(255, 255, 255, 0.20);
+  --text-inverse:   #0A0A0A;
+
+
+  /* ─────────────────────────────
+     SEMANTIC COLORS — HIG Dark
+  ───────────────────────────── */
+
+  /* Blue — dates, links, decisions, info */
+  --color-blue:         #0A84FF;
+  --color-blue-hover:   #3A9EFF;
+  --color-blue-muted:   rgba(10, 132, 255, 0.14);
+  --color-blue-border:  rgba(10, 132, 255, 0.28);
+
+  /* Green — budget, success, resolved */
+  --color-green:        #30D158;
+  --color-green-hover:  #4DDE6F;
+  --color-green-muted:  rgba(48, 209, 88, 0.14);
+  --color-green-border: rgba(48, 209, 88, 0.28);
+
+  /* Red — blockers, errors, destructive */
+  --color-red:          #FF453A;
+  --color-red-hover:    #FF6961;
+  --color-red-muted:    rgba(255, 69, 58, 0.14);
+  --color-red-border:   rgba(255, 69, 58, 0.28);
+
+  /* Orange — facts, warnings */
+  --color-orange:       #FF9F0A;
+  --color-orange-hover: #FFB340;
+  --color-orange-muted: rgba(255, 159, 10, 0.14);
+  --color-orange-border:rgba(255, 159, 10, 0.28);
+
+  /* Yellow — star/priority */
+  --color-yellow:       #FFD60A;
+  --color-yellow-muted: rgba(255, 214, 10, 0.14);
+
+  /* Purple — Slack sources */
+  --color-purple:       #BF5AF2;
+  --color-purple-hover: #CC6FF5;
+  --color-purple-muted: rgba(191, 90, 242, 0.14);
+  --color-purple-border:rgba(191, 90, 242, 0.28);
+
+  /* Teal — supplementary */
+  --color-teal:         #40CBE0;
+  --color-teal-muted:   rgba(64, 203, 224, 0.14);
+
+
+  /* ─────────────────────────────
+     NODE TYPES
+  ───────────────────────────── */
+  --node-date-color:          var(--color-blue);
+  --node-date-bg:             var(--color-blue-muted);
+  --node-date-border:         var(--color-blue-border);
+
+  --node-blocker-color:       var(--color-red);
+  --node-blocker-bg:          var(--color-red-muted);
+  --node-blocker-border:      var(--color-red-border);
+
+  --node-budget-color:        var(--color-green);
+  --node-budget-bg:           var(--color-green-muted);
+  --node-budget-border:       var(--color-green-border);
+
+  --node-fact-color:          var(--color-orange);
+  --node-fact-bg:             var(--color-orange-muted);
+  --node-fact-border:         var(--color-orange-border);
+
+
+  /* ─────────────────────────────
+     SOURCE TYPES
+  ───────────────────────────── */
+  --source-call-color:   var(--color-teal);
+  --source-call-bg:      var(--color-teal-muted);
+  --source-slack-color:  var(--color-purple);
+  --source-slack-bg:     var(--color-purple-muted);
+  --source-doc-color:    var(--text-secondary);
+  --source-doc-bg:       rgba(255, 255, 255, 0.06);
+
+
+  /* ─────────────────────────────
+     DECISION BLOCK
+  ───────────────────────────── */
+  --decision-bg:         rgba(10, 132, 255, 0.08);
+  --decision-border:     rgba(10, 132, 255, 0.22);
+  --decision-text:       var(--color-blue);
+
+
+  /* ─────────────────────────────
+     AI SURFACE
+  ───────────────────────────── */
+  --ai-bg:     rgba(10, 132, 255, 0.10);
+  --ai-border: rgba(10, 132, 255, 0.20);
+  --ai-text:   var(--color-blue);
+
+
+  /* ─────────────────────────────
+     STATUS BADGES
+  ───────────────────────────── */
+  --status-active-color:    var(--color-orange);
+  --status-active-bg:       var(--color-orange-muted);
+
+  --status-decided-color:   var(--color-blue);
+  --status-decided-bg:      var(--color-blue-muted);
+
+  --status-resolved-color:  var(--color-green);
+  --status-resolved-bg:     var(--color-green-muted);
+
+  --status-archived-color:  var(--text-tertiary);
+  --status-archived-bg:     rgba(255, 255, 255, 0.06);
+
+
+  /* ─────────────────────────────
+     TYPOGRAPHY
+  ───────────────────────────── */
+  --font-heading: 'Neue Machina', system-ui, sans-serif;
+  --font-body:    'Intel One Mono', 'Courier New', monospace;
+  --font-ui:      'Inter', system-ui, sans-serif;
+
+  /* Scale */
+  --text-xs:   10px;   /* section labels, eyebrows */
+  --text-sm:   11px;   /* meta, timestamps, captions */
+  --text-base: 12px;   /* body, descriptions */
+  --text-md:   13px;   /* card/node titles */
+  --text-lg:   15px;   /* panel headers */
+  --text-xl:   18px;   /* page section titles */
+  --text-2xl:  24px;   /* topic title */
+  --text-3xl:  32px;   /* page title */
+
+  /* Weights */
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  700;
+  --weight-bold:      800;
+
+  /* Line heights */
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  /* Letter spacing */
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.05em;
+  --tracking-wider:   0.10em;
+
+
+  /* ─────────────────────────────
+     SPACING — 4px base grid
+  ───────────────────────────── */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   12px;
+  --space-lg:   16px;
+  --space-xl:   20px;
+  --space-2xl:  24px;
+  --space-3xl:  32px;
+  --space-4xl:  40px;
+  --space-5xl:  48px;
+  --space-6xl:  64px;
+
+
+  /* ─────────────────────────────
+     BORDER RADIUS
+  ───────────────────────────── */
+  --radius-sm:   4px;    /* badges, tags */
+  --radius-md:   8px;    /* cards, inputs, nodes */
+  --radius-lg:   12px;   /* panels, expanded cards */
+  --radius-xl:   16px;   /* slide-out panel */
+  --radius-pill: 9999px; /* count badges, status pills */
+
+
+  /* ─────────────────────────────
+     SHADOWS
+  ───────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.65);
+  --shadow-xl:  0 16px 48px rgba(0, 0, 0, 0.75);
+  --shadow-panel: -8px 0 32px rgba(0, 0, 0, 0.60);
+
+
+  /* ─────────────────────────────
+     LAYOUT
+  ───────────────────────────── */
+  --sidebar-width:      240px;
+  --triage-width:       420px;
+  --right-panel-width:  320px;
+  --header-height:       56px;
+
+
+  /* ─────────────────────────────
+     MOTION
+  ───────────────────────────── */
+  --ease-default:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:        cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:       cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast:   120ms;
+  --duration-normal: 200ms;
+  --duration-slow:   320ms;
+}

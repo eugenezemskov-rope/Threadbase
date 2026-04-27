@@ -1,0 +1,126 @@
+.header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3xl);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  gap: var(--space-lg);
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.stats {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.center {
+  flex-shrink: 0;
+}
+
+.viewToggle {
+  display: flex;
+  background: var(--bg-base);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+  box-shadow: var(--shadow-sm);
+}
+.toggleBtn {
+  width: 120px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+  padding: 4px var(--space-md);
+  border-radius: calc(var(--radius-md) - 2px);
+  text-align: center;
+  margin-top: -1px;
+  transition: background var(--duration-fast) var(--ease-default),
+              color var(--duration-fast);
+}
+.toggleBtn:hover {
+  color: var(--text-primary);
+}
+.toggleBtnActive {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.triageBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 6px var(--space-md);
+  position: relative;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.triageBtn:hover {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-muted);
+}
+.triageBtnText {
+  margin-top: -1px;
+}
+
+.triageBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--bg-base);
+  background: var(--brand-primary);
+  border-radius: var(--radius-pill);
+  padding: 1px 5px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.triageBadgeCircle {
+  width: 16px;
+  padding: 0;
+}

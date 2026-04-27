@@ -1,0 +1,201 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-xl);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  width: 100%;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              background var(--duration-fast);
+  cursor: pointer;
+}
+.card:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-default);
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.badge_active   .badgeDot { background: var(--status-active-color); }
+.badge_decided  .badgeDot { background: var(--status-decided-color); }
+.badge_resolved .badgeDot { background: var(--status-resolved-color); }
+.badge_archived .badgeDot { background: var(--status-archived-color); }
+
+.nodeCount {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: var(--leading-snug);
+}
+
+.description {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+.footerMeta {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+.footerDot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--text-disabled);
+}
+
+.moreWrap {
+  position: relative;
+  margin-left: auto;
+}
+
+.moreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.moreBtn:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.menuItemWrap {
+  position: relative;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 6px var(--space-sm);
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-align: left;
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.menuItem:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+.menuItemActive {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+.menuItemDanger {
+  color: var(--color-red);
+}
+.menuItemDanger:hover {
+  background: var(--color-red-muted);
+  color: var(--color-red);
+}
+
+.chevron {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-default);
+}
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.subMenu {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 8px);
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  z-index: 21;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 4px 0;
+}
