@@ -7,7 +7,6 @@ interface Member { name: string; color?: string }
 
 interface HeaderBarProps {
   projectName?: string
-  stats?: string
   members?: Member[]
   triageCount?: number
   activeView?: 'topics' | 'tasks'
@@ -19,7 +18,6 @@ interface HeaderBarProps {
 
 export function HeaderBar({
   projectName,
-  stats,
   members = [],
   triageCount = 0,
   activeView = 'topics',

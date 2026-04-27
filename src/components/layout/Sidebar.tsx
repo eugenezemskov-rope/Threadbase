@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderKanban, CheckSquare, ChevronRight, Plug, User } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, CheckSquare, ChevronRight, Plug } from 'lucide-react'
 import styles from './Sidebar.module.css'
 
 interface Project {

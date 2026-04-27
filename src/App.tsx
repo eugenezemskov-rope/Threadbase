@@ -516,7 +516,7 @@ export default function App() {
           <h2 className="sg-section-title">Topic Card</h2>
           <div className="sg-cards-grid">
             <TopicCard title="Rebrand Launch" status="active" nodeCount={6} taskCount={2} description="New visual identity rollout across all customer-facing touchpoints." updatedAt="2h ago" members={[{name:'Anna Kim'},{name:'Max Rivera'},{name:'Jake Lee'},{name:'Sara Chen'}]} />
-            <TopicCard title="API v3 Migration" status="progress" nodeCount={4} taskCount={5} description="Breaking changes for enterprise clients. Versioning strategy to be finalized." updatedAt="4h ago" members={[{name:'Tom Park'},{name:'Lisa Wong'}]} />
+            <TopicCard title="API v3 Migration" status="active" nodeCount={4} taskCount={5} description="Breaking changes for enterprise clients. Versioning strategy to be finalized." updatedAt="4h ago" members={[{name:'Tom Park'},{name:'Lisa Wong'}]} />
             <TopicCard title="Q3 Budget Review" status="decided" nodeCount={3} taskCount={1} description="Budget allocation finalized after review with finance team." updatedAt="1d ago" members={[{name:'Anna Kim'},{name:'Jake Lee'},{name:'Sara Chen'},{name:'Tom Park'},{name:'Max Rivera'}]} />
             <TopicCard title="Onboarding Revamp" status="resolved" nodeCount={5} taskCount={0} description="Reduce time-to-value for new users. A/B test completed." updatedAt="3d ago" members={[{name:'Lisa Wong'},{name:'Anna Kim'}]} />
           </div>
@@ -544,7 +544,6 @@ export default function App() {
           <div className="sg-header-preview">
             <HeaderBar
               projectName="Product Launch"
-              stats="8 topics · 3 members"
               triageCount={5}
               activeView="topics"
               onViewChange={() => {}}

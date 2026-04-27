@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, Star, Link, ArrowRight } from 'lucide-react'
+import { ChevronDown, Link, ArrowRight } from 'lucide-react'
 import { Calendar, Ban, Wallet, Pin } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SelectDropdown } from '../primitives/SelectDropdown'
@@ -38,17 +38,15 @@ interface TriageNodeProps {
   starred?: boolean
   topics?: string[]
   onAssign?: (topic: string) => void
-  onStar?: () => void
   onDismiss?: () => void
 }
 
 export function TriageNode({
   type, title, description, sourceQuote, sourceLabel, sourceLink,
   suggestedTopic, assignedTopic, isAssigned = false,
-  starred = false, topics = [], onAssign, onStar,
+  topics = [], onAssign,
 }: TriageNodeProps) {
   const [expanded, setExpanded] = useState(false)
-  const [isStarred, setIsStarred] = useState(starred)
   const [assignedTo, setAssignedTo] = useState(
     isAssigned ? (assignedTopic ?? suggestedTopic ?? '') : ''
   )
