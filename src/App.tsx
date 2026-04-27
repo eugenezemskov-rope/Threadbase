@@ -156,7 +156,7 @@ export default function App() {
     <div className="sg-root">
 
       <header className="sg-header">
-        <img src="/img/Logo.svg" alt="ThreadBase" className="sg-logo" />
+        <img src={`${import.meta.env.BASE_URL}img/Logo.svg`} alt="ThreadBase" className="sg-logo" />
         <span className="sg-badge-tag">Design System · v0.1</span>
       </header>
 

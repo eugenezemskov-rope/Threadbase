@@ -35,7 +35,7 @@ export function Sidebar({
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <img src="/img/Logo.svg" alt="ThreadBase" className={styles.logoImg} />
+        <img src={`${import.meta.env.BASE_URL}img/Logo.svg`} alt="ThreadBase" className={styles.logoImg} />
       </div>
 
       <nav className={styles.nav}>
