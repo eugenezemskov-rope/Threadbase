@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowRight, ThumbsUp, CornerUpLeft } from 'lucide-react'
+import { ThumbsUp, CornerUpLeft } from 'lucide-react'
 import { TabBar } from '../primitives/TabBar'
 import { AvatarGroup } from '../primitives/AvatarGroup'
 import styles from './RightPanel.module.css'
