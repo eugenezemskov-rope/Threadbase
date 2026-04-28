@@ -42,6 +42,7 @@
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: 0;
+  margin-top: -1px;
 }
 
 .overflow {
@@ -51,4 +52,22 @@
 .overflow .initials {
   color: var(--text-secondary);
   font-size: 9px;
+}
+.overflow .initialsLong {
+  font-size: 7px;
+}
+
+.addBtn {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+  border-style: solid;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast) var(--ease-default);
+}
+.addBtn:hover {
+  background: var(--bg-overlay);
+  border-color: var(--border-strong);
+}
+.addIcon {
+  color: var(--text-tertiary);
 }

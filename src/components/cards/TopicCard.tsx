@@ -60,7 +60,7 @@ export function TopicCard({ title, status, nodeCount, taskCount, description, up
         <div className={styles.meta}>
           <span className={`${styles.badge} ${styles[`badge_${status}`]}`}>
             <span className={styles.badgeDot} />
-            {statusLabel[status]}
+            <span className={styles.badgeText}>{statusLabel[status]}</span>
           </span>
           <span className={styles.nodeCount}>{nodeCount} nodes</span>
         </div>

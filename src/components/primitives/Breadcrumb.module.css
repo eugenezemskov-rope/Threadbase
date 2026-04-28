@@ -8,8 +8,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-left: -3px;
   color: var(--text-tertiary);
-  padding: 4px;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   transition: color var(--duration-fast), background var(--duration-fast);
 }
@@ -33,8 +37,10 @@
 .link {
   font-family: var(--font-body);
   font-size: var(--text-base);
+  line-height: 1;
   color: var(--text-secondary);
-  padding: 2px var(--space-xs);
+  padding: 2px var(--space-sm);
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   transition: color var(--duration-fast), background var(--duration-fast);
 }
@@ -46,6 +52,7 @@
 .current {
   font-family: var(--font-body);
   font-size: var(--text-base);
+  line-height: 1;
   font-weight: var(--weight-medium);
   color: var(--text-primary);
   background: var(--bg-elevated);

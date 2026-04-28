@@ -5,6 +5,7 @@ import { Sidebar } from '../components/layout/Sidebar'
 import { HeaderBar } from '../components/layout/HeaderBar'
 import { TriagePanel } from '../components/layout/TriagePanel'
 import { TopicCard } from '../components/cards/TopicCard'
+import { TaskBoard } from '../components/project/TaskBoard'
 import styles from './ProjectOverviewPage.module.css'
 
 const PROJECTS = [
@@ -114,7 +115,12 @@ const STATUS_FILTERS = [
   { key: 'archived', label: 'Archived' },
 ]
 
-export function ProjectOverviewPage() {
+interface ProjectOverviewPageProps {
+  onTopicClick?: (id: string) => void
+  onHome?: () => void
+}
+
+export function ProjectOverviewPage({ onTopicClick, onHome }: ProjectOverviewPageProps) {
   const [triageOpen, setTriageOpen]       = useState(false)
   const [activeView, setActiveView]       = useState<'topics' | 'tasks'>('topics')
   const [activeProject, setActiveProject] = useState('product-launch')
@@ -134,11 +140,15 @@ export function ProjectOverviewPage() {
         projects={PROJECTS}
         activeProjectId={activeProject}
         onProjectClick={setActiveProject}
+        onHomeClick={onHome}
       />
 
       <div className={styles.main}>
         <HeaderBar
-          projectName="Product Launch"
+          breadcrumb={[
+            { label: 'Product Launch' },
+          ]}
+          onHomeClick={onHome}
           members={[
             { name: 'Alex Kim',    color: 'var(--color-blue)' },
             { name: 'Sam Chen',    color: 'var(--color-green)' },
@@ -146,49 +156,54 @@ export function ProjectOverviewPage() {
             { name: 'Morgan Park', color: 'var(--color-purple)' },
             { name: 'River Song',  color: 'var(--color-red)' },
           ]}
+          memberCount={12}
           activeView={activeView}
           onViewChange={setActiveView}
           triageCount={5}
           onTriageOpen={() => setTriageOpen(true)}
         />
 
-        <div className={styles.content}>
-          <div className={styles.toolbar}>
-            <div className={styles.toolbarLeft}>
-              <button className="sg-btn sg-btn--primary sg-btn--md">
-                <Plus size={13} strokeWidth={1.5} />
-                <span className="sg-btn-text">Add topic</span>
-              </button>
-              <div className={styles.searchBox}>
-                <Search size={12} strokeWidth={1.5} className={styles.searchIcon} />
-                <input
-                  className={styles.searchInput}
-                  placeholder="Search topics…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
+        {activeView === 'tasks' ? (
+          <TaskBoard />
+        ) : (
+          <div className={styles.content}>
+            <div className={styles.toolbar}>
+              <div className={styles.toolbarLeft}>
+                <button className="sg-btn sg-btn--primary sg-btn--md">
+                  <Plus size={13} strokeWidth={1.5} />
+                  <span className="sg-btn-text">Add topic</span>
+                </button>
+                <div className={styles.searchBox}>
+                  <Search size={12} strokeWidth={1.5} className={styles.searchIcon} />
+                  <input
+                    className={styles.searchInput}
+                    placeholder="Search topics…"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                  />
+                </div>
+                <div className={styles.filterPills}>
+                  {STATUS_FILTERS.map(f => (
+                    <button
+                      key={f.key}
+                      className={`${styles.pill} ${statusFilter === f.key ? styles.pillActive : ''}`}
+                      onClick={() => setStatusFilter(f.key)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className={styles.filterPills}>
-                {STATUS_FILTERS.map(f => (
-                  <button
-                    key={f.key}
-                    className={`${styles.pill} ${statusFilter === f.key ? styles.pillActive : ''}`}
-                    onClick={() => setStatusFilter(f.key)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+              <span className={styles.topicCount}>{filtered.length} topics</span>
             </div>
-            <span className={styles.topicCount}>{filtered.length} topics</span>
-          </div>
 
-          <div className={styles.topicGrid}>
-            {filtered.map(t => (
-              <TopicCard key={t.id} {...t} projects={PROJECTS} />
-            ))}
+            <div className={styles.topicGrid}>
+              {filtered.map(t => (
+                <TopicCard key={t.id} {...t} projects={PROJECTS} onClick={() => onTopicClick?.(t.id)} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <AnimatePresence>

@@ -9,9 +9,10 @@ interface CrumbItem {
 interface BreadcrumbProps {
   items: CrumbItem[]
   maxVisible?: number
+  onHomeClick?: () => void
 }
 
-export function Breadcrumb({ items, maxVisible = 3 }: BreadcrumbProps) {
+export function Breadcrumb({ items, maxVisible = 3, onHomeClick }: BreadcrumbProps) {
   const collapse = items.length > maxVisible + 1
 
   let visible: (CrumbItem | null)[] = items
@@ -25,7 +26,7 @@ export function Breadcrumb({ items, maxVisible = 3 }: BreadcrumbProps) {
 
   return (
     <nav className={styles.breadcrumb} aria-label="breadcrumb">
-      <button className={styles.homeBtn} aria-label="Home">
+      <button className={styles.homeBtn} aria-label="Home" onClick={onHomeClick}>
         <Home size={13} strokeWidth={1.5} />
       </button>
 

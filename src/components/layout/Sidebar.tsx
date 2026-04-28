@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderKanban, CheckSquare, ChevronRight, Plug } from 'lucide-react'
+import { Home, FolderKanban, CheckSquare, Plug } from 'lucide-react'
 import styles from './Sidebar.module.css'
 
 interface Project {
@@ -11,17 +11,12 @@ interface SidebarProps {
   projects?: Project[]
   activeProjectId?: string
   onProjectClick?: (id: string) => void
-  mode?: 'project' | 'topic'
+  mode?: 'home' | 'project' | 'topic'
   topics?: { id: string; name: string; active?: boolean }[]
   onTopicClick?: (id: string) => void
   onBackClick?: () => void
+  onHomeClick?: () => void
 }
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard' },
-  { icon: FolderKanban,    label: 'Projects',  active: true },
-  { icon: CheckSquare,     label: 'My Tasks' },
-]
 
 export function Sidebar({
   projects = [],
@@ -30,8 +25,13 @@ export function Sidebar({
   mode = 'project',
   topics = [],
   onTopicClick,
-  onBackClick,
+  onHomeClick,
 }: SidebarProps) {
+  const navItems = [
+    { icon: Home,         label: 'Home',     active: mode === 'home',    onClick: onHomeClick },
+    { icon: FolderKanban, label: 'Projects', active: mode !== 'home' },
+    { icon: CheckSquare,  label: 'My Tasks', active: false },
+  ]
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
@@ -41,19 +41,12 @@ export function Sidebar({
       <nav className={styles.nav}>
         <span className={styles.sectionLabel}>Navigation</span>
         {navItems.map(item => (
-          <button key={item.label} className={`${styles.navItem} ${item.active ? styles.navItemActive : ''}`}>
+          <button key={item.label} className={`${styles.navItem} ${item.active ? styles.navItemActive : ''}`} onClick={item.onClick}>
             <item.icon size={14} strokeWidth={1.5} />
             <span>{item.label}</span>
           </button>
         ))}
       </nav>
-
-      {mode === 'topic' && (
-        <button className={styles.backLink} onClick={onBackClick}>
-          <ChevronRight size={12} strokeWidth={1.5} className={styles.backChevron} />
-          Back to Project
-        </button>
-      )}
 
       <div className={styles.section}>
         <span className={styles.sectionLabel}>

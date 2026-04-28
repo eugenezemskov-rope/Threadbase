@@ -43,7 +43,8 @@
 }
 
 .viewToggle {
-  display: flex;
+  display: inline-flex;
+  align-self: center;
   background: var(--bg-base);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
@@ -57,15 +58,20 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-regular);
   color: var(--text-secondary);
-  padding: 4px var(--space-md);
+  padding: 4px;
   border-radius: calc(var(--radius-md) - 2px);
   text-align: center;
-  margin-top: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background var(--duration-fast) var(--ease-default),
               color var(--duration-fast);
 }
 .toggleBtn:hover {
   color: var(--text-primary);
+}
+.toggleBtnText {
+  margin-top: -1px;
 }
 .toggleBtnActive {
   background: var(--bg-overlay);
@@ -76,8 +82,32 @@
 .right {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-lg);
   flex-shrink: 0;
+}
+
+.membersGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.addMemberBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  transition: color var(--duration-fast), border-color var(--duration-fast), background var(--duration-fast);
+}
+.addMemberBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background: var(--bg-overlay);
 }
 
 .triageBtn {

@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { ChevronDown, Link, ArrowRight } from 'lucide-react'
-import { Calendar, Ban, Wallet, Pin } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SelectDropdown } from '../primitives/SelectDropdown'
 import type { SelectOption } from '../primitives/SelectDropdown'
 import styles from './TriageNode.module.css'
 
 type NodeType = 'date' | 'blocker' | 'budget' | 'fact'
-
-const typeIcons = { date: Calendar, blocker: Ban, budget: Wallet, fact: Pin }
 
 const TOPIC_PALETTE = [
   'var(--color-blue)',
@@ -51,8 +48,6 @@ export function TriageNode({
     isAssigned ? (assignedTopic ?? suggestedTopic ?? '') : ''
   )
 
-  const Icon = typeIcons[type]
-
   const topicOptions: SelectOption[] = [
     ...(suggestedTopic ? [{ value: suggestedTopic, label: suggestedTopic, isAI: true }] : []),
     ...topics
@@ -73,7 +68,6 @@ export function TriageNode({
         {/* Header row */}
         <button className={styles.headerRow} onClick={() => setExpanded(v => !v)}>
           <div className={styles.titleRow}>
-            <Icon size={12} strokeWidth={1.5} style={{ color: `var(--node-${type}-color)`, flexShrink: 0 }} />
             <span className={styles.title}>{title}</span>
           </div>
           <ChevronDown

@@ -10,6 +10,8 @@ import { TriageNode } from './components/nodes/TriageNode'
 import { SourceCard } from './components/cards/SourceCard'
 import { SelectDropdown } from './components/primitives/SelectDropdown'
 import { ProjectOverviewPage } from './pages/ProjectOverviewPage'
+import { TopicPage } from './pages/TopicPage'
+import { HomePage } from './pages/HomePage'
 import { useState } from 'react'
 import './styles/styleguide.css'
 
@@ -129,27 +131,19 @@ function SelectDropdownDemo() {
 }
 
 export default function App() {
-  const [view, setView] = useState<'page' | 'ds'>('page')
+  const [view, setView] = useState<'home' | 'overview' | 'topic' | 'ds'>('home')
   const [activeTab, setActiveTab] = useState('details')
 
-  if (view === 'page') {
-    return (
-      <>
-        <ProjectOverviewPage />
-        <button
-          onClick={() => setView('ds')}
-          style={{
-            position: 'fixed', bottom: 16, right: 16, zIndex: 999,
-            fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)',
-            color: 'var(--text-tertiary)', background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)',
-            padding: '4px 10px', cursor: 'pointer',
-          }}
-        >
-          Design System ↗
-        </button>
-      </>
-    )
+  if (view === 'home') {
+    return <HomePage onProjectClick={() => setView('overview')} />
+  }
+
+  if (view === 'overview') {
+    return <ProjectOverviewPage onTopicClick={() => setView('topic')} onHome={() => setView('home')} />
+  }
+
+  if (view === 'topic') {
+    return <TopicPage onBack={() => setView('overview')} onHome={() => setView('home')} />
   }
 
   return (
@@ -562,18 +556,6 @@ export default function App() {
         </section>
 
       </main>
-      <button
-        onClick={() => setView('page')}
-        style={{
-          position: 'fixed', bottom: 16, left: 16, zIndex: 999,
-          fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)',
-          color: 'var(--text-tertiary)', background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)',
-          padding: '4px 10px', cursor: 'pointer',
-        }}
-      >
-        Project Page ↗
-      </button>
     </div>
   )
 }
