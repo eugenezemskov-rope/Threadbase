@@ -541,13 +541,8 @@ export default function App() {
           <h2 className="sg-section-title">Sidebar</h2>
           <div className="sg-sidebar-preview">
             <Sidebar
-              mode="project"
-              projects={[
-                { id: '1', name: 'Product Launch', active: true },
-                { id: '2', name: 'Platform v2' },
-                { id: '3', name: 'Growth Experiments' },
-              ]}
-              activeProjectId="1"
+              activeNav="projects"
+              activeProjectId="product-launch"
             />
           </div>
         </section>

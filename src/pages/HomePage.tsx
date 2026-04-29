@@ -1,4 +1,4 @@
-import { Plus, ArrowRight, Search, Calendar, CheckSquare, MoreVertical, MoreHorizontal, ArrowRightCircle, Copy, Link, Trash2, MessageSquare, Inbox, CheckCircle2, UserPlus, Tag, CornerDownRight, Pencil, Archive, Pin } from 'lucide-react'
+import { Plus, Search, Calendar, CheckSquare, MoreHorizontal, ArrowRightCircle, Copy, Link, Trash2, MessageSquare, Inbox, CheckCircle2, UserPlus, Tag, CornerDownRight, Pencil, Archive, Pin } from 'lucide-react'
 import React, { useState, useRef, useEffect } from 'react'
 import { AvatarGroup } from '../components/primitives/AvatarGroup'
 import { TaskCardModal } from '../components/project/TaskCardModal'
@@ -369,7 +369,7 @@ interface HomePageProps {
 
 export function HomePage({ onProjectClick, onTasksClick }: HomePageProps) {
   const [modalTask, setModalTask] = useState<TaskDetail | null>(null)
-  const [readItems, setReadItems] = useState<Set<string>>(new Set())
+  const [_readItems, setReadItems] = useState<Set<string>>(new Set())
 
   function openTask(t: MyTask) {
     setModalTask({
