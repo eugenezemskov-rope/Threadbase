@@ -1,78 +1,163 @@
-import { Home, FolderKanban, CheckSquare, Plug } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Home, CheckSquare, Plug, ChevronRight } from 'lucide-react'
 import styles from './Sidebar.module.css'
+
+interface Topic {
+  id: string
+  name: string
+}
 
 interface Project {
   id: string
   name: string
-  active?: boolean
+  topics: Topic[]
 }
 
+const PROJECTS: Project[] = [
+  {
+    id: 'product-launch',
+    name: 'Product Launch',
+    topics: [
+      { id: 't1', name: 'Rebrand Launch' },
+      { id: 't2', name: 'API v3 Migration' },
+      { id: 't3', name: 'Q3 Budget Review' },
+      { id: 't4', name: 'Onboarding Revamp' },
+      { id: 't5', name: 'Mobile App Beta' },
+    ],
+  },
+  {
+    id: 'platform-v2',
+    name: 'Platform v2',
+    topics: [
+      { id: 't6', name: 'Platform Architecture' },
+      { id: 't7', name: 'API Gateway' },
+      { id: 't8', name: 'DevOps Pipeline' },
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Growth Experiments',
+    topics: [
+      { id: 't9',  name: 'Pricing Page Redesign' },
+      { id: 't10', name: 'SEO Optimization' },
+      { id: 't11', name: 'Referral Program' },
+    ],
+  },
+  {
+    id: 'onboarding',
+    name: 'Customer Onboarding',
+    topics: [
+      { id: 't12', name: 'Onboarding Flow' },
+      { id: 't13', name: 'Help Center Redesign' },
+    ],
+  },
+]
+
 interface SidebarProps {
-  projects?: Project[]
-  activeProjectId?: string
-  onProjectClick?: (id: string) => void
-  mode?: 'home' | 'project' | 'topic'
-  topics?: { id: string; name: string; active?: boolean }[]
-  onTopicClick?: (id: string) => void
-  onBackClick?: () => void
+  activeNav?: 'home' | 'tasks' | 'projects'
+  activeProjectId?: string | null
+  activeTopicId?: string | null
   onHomeClick?: () => void
+  onTasksClick?: () => void
+  onProjectClick?: (id: string) => void
+  onTopicClick?: (projectId: string, topicId: string) => void
 }
 
 export function Sidebar({
-  projects = [],
+  activeNav = 'home',
   activeProjectId,
-  onProjectClick,
-  mode = 'project',
-  topics = [],
-  onTopicClick,
+  activeTopicId,
   onHomeClick,
+  onTasksClick,
+  onProjectClick,
+  onTopicClick,
 }: SidebarProps) {
-  const navItems = [
-    { icon: Home,         label: 'Home',     active: mode === 'home',    onClick: onHomeClick },
-    { icon: FolderKanban, label: 'Projects', active: mode !== 'home' },
-    { icon: CheckSquare,  label: 'My Tasks', active: false },
-  ]
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(
+    activeProjectId ? { [activeProjectId]: true } : {}
+  )
+
+  useEffect(() => {
+    if (activeProjectId) setExpanded({ [activeProjectId]: true })
+  }, [activeProjectId])
+
+  useEffect(() => {
+    if (activeTopicId) {
+      const project = PROJECTS.find(p => p.topics.some(t => t.id === activeTopicId))
+      if (project) setExpanded({ [project.id]: true })
+    }
+  }, [activeTopicId])
+
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.logo}>
+      <button className={styles.logo} onClick={onHomeClick}>
         <img src={`${import.meta.env.BASE_URL}img/Logo.svg`} alt="ThreadBase" className={styles.logoImg} />
-      </div>
+      </button>
 
       <nav className={styles.nav}>
         <span className={styles.sectionLabel}>Navigation</span>
-        {navItems.map(item => (
-          <button key={item.label} className={`${styles.navItem} ${item.active ? styles.navItemActive : ''}`} onClick={item.onClick}>
-            <item.icon size={14} strokeWidth={1.5} />
-            <span>{item.label}</span>
-          </button>
-        ))}
+        <button
+          className={`${styles.navItem} ${activeNav === 'home' ? styles.navItemActive : ''}`}
+          onClick={onHomeClick}
+        >
+          <Home size={14} strokeWidth={1.5} />
+          <span>Home</span>
+        </button>
+        <button
+          className={`${styles.navItem} ${activeNav === 'tasks' ? styles.navItemActive : ''}`}
+          onClick={onTasksClick}
+        >
+          <CheckSquare size={14} strokeWidth={1.5} />
+          <span>My Tasks</span>
+        </button>
       </nav>
 
-      <div className={styles.section}>
-        <span className={styles.sectionLabel}>
-          {mode === 'topic' ? 'Topics in Project' : 'My Projects'}
-        </span>
-        {mode === 'project' && projects.map(p => (
-          <button
-            key={p.id}
-            className={`${styles.projectItem} ${p.id === activeProjectId ? styles.projectItemActive : ''}`}
-            onClick={() => onProjectClick?.(p.id)}
-          >
-            <span className={`${styles.projectDot} ${p.id === activeProjectId ? styles.projectDotActive : ''}`} />
-            <span>{p.name}</span>
-          </button>
-        ))}
-        {mode === 'topic' && topics.map(t => (
-          <button
-            key={t.id}
-            className={`${styles.projectItem} ${t.active ? styles.projectItemActive : ''}`}
-            onClick={() => onTopicClick?.(t.id)}
-          >
-            <span className={`${styles.projectDot} ${t.active ? styles.projectDotActive : ''}`} />
-            <span>{t.name}</span>
-          </button>
-        ))}
+      <div className={styles.divider} />
+
+      <div className={styles.projectsScroll}>
+        <span className={styles.sectionLabel}>My Projects</span>
+        {PROJECTS.map(p => {
+          const isActive = p.id === activeProjectId
+          const isOpen   = !!expanded[p.id]
+          return (
+            <div key={p.id} className={styles.projectGroup}>
+              <div className={`${styles.projectRow} ${isActive ? styles.projectRowActive : ''}`}>
+                <button
+                  className={styles.projectChevronBtn}
+                  onClick={() => setExpanded(prev => ({ ...prev, [p.id]: !prev[p.id] }))}
+                >
+                  <ChevronRight
+                    size={12}
+                    strokeWidth={1.5}
+                    className={`${styles.projectChevron} ${isOpen ? styles.projectChevronOpen : ''}`}
+                  />
+                </button>
+                <button
+                  className={styles.projectNameBtn}
+                  onClick={() => onProjectClick?.(p.id)}
+                >
+                  {p.name}
+                </button>
+              </div>
+
+              {isOpen && (
+                <div className={styles.topicList}>
+                  {p.topics.map(t => (
+                    <button
+                      key={t.id}
+                      className={`${styles.topicItem} ${t.id === activeTopicId ? styles.topicItemActive : ''}`}
+                      onClick={() => onTopicClick?.(p.id, t.id)}
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
+
+      <div className={styles.divider} />
 
       <div className={styles.bottom}>
         <button className={styles.bottomItem}>

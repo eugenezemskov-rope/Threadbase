@@ -1,16 +1,27 @@
 import { useState } from 'react'
-import { ChevronDown, Star, Link } from 'lucide-react'
+import { ChevronDown, Star, Link, Video, MessageSquare, FileText, BookOpen, GitBranch, BarChart2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AvatarGroup } from '../primitives/AvatarGroup'
 import styles from './ContextNode.module.css'
 
-type NodeType = 'date' | 'blocker' | 'budget' | 'fact'
+type NodeType   = 'date' | 'blocker' | 'budget' | 'fact'
+type SourceType = 'slack' | 'meet' | 'docs' | 'notion' | 'github' | 'analytics'
+
+const SOURCE_META: Record<SourceType, { label: string; icon: React.ElementType; color: string; bg: string }> = {
+  slack:     { label: 'Slack',     icon: MessageSquare, color: 'var(--source-slack-color)',     bg: 'var(--source-slack-bg)'     },
+  meet:      { label: 'Meet',      icon: Video,         color: 'var(--source-meet-color)',      bg: 'var(--source-meet-bg)'      },
+  docs:      { label: 'Docs',      icon: FileText,      color: 'var(--source-docs-color)',      bg: 'var(--source-docs-bg)'      },
+  notion:    { label: 'Notion',    icon: BookOpen,      color: 'var(--source-notion-color)',    bg: 'var(--source-notion-bg)'    },
+  github:    { label: 'GitHub',    icon: GitBranch,     color: 'var(--source-github-color)',    bg: 'var(--source-github-bg)'    },
+  analytics: { label: 'Analytics', icon: BarChart2,     color: 'var(--source-analytics-color)', bg: 'var(--source-analytics-bg)' },
+}
 
 interface ContextNodeProps {
   type: NodeType
   title: string
   description?: string
   sourceLabel?: string
+  sourceType?: SourceType
   sourceQuote?: string
   sourceLink?: string
   createdBy?: { name: string; color?: string }
@@ -20,7 +31,7 @@ interface ContextNodeProps {
 }
 
 export function ContextNode({
-  type, title, description, sourceLabel, sourceQuote, sourceLink,
+  type, title, description, sourceLabel, sourceType, sourceQuote, sourceLink,
   createdBy, myNote,
   starred = false, defaultExpanded = false,
 }: ContextNodeProps) {
@@ -88,9 +99,21 @@ export function ContextNode({
                 <span className={styles.creatorName} style={{ color: createdBy.color }}>{createdBy.name}</span>
               </>
             )}
+            {sourceType && (() => {
+              const s = SOURCE_META[sourceType]
+              const Icon = s.icon
+              return (
+                <>
+                  {createdBy && <span className={styles.sourceSep}>·</span>}
+                  <span className={styles.sourceChip} style={{ color: s.color, background: s.bg }}>
+                    <Icon size={10} strokeWidth={1.75} />
+                    {s.label}
+                  </span>
+                </>
+              )
+            })()}
             {sourceLabel && (
               <>
-                {createdBy && <span className={styles.sourceSep}>·</span>}
                 <span className={styles.sourceMeta}>{sourceLabel}</span>
               </>
             )}

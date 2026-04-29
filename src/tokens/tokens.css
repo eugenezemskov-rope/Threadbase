@@ -169,12 +169,22 @@
   /* ─────────────────────────────
      SOURCE TYPES
   ───────────────────────────── */
-  --source-call-color:   var(--color-teal);
-  --source-call-bg:      var(--color-teal-muted);
-  --source-slack-color:  var(--color-purple);
-  --source-slack-bg:     var(--color-purple-muted);
-  --source-doc-color:    var(--text-secondary);
-  --source-doc-bg:       rgba(255, 255, 255, 0.06);
+  --source-call-color:       var(--color-teal);
+  --source-call-bg:          var(--color-teal-muted);
+  --source-slack-color:      var(--color-purple);
+  --source-slack-bg:         var(--color-purple-muted);
+  --source-doc-color:        var(--text-secondary);
+  --source-doc-bg:           rgba(255, 255, 255, 0.06);
+  --source-meet-color:       #34a853;
+  --source-meet-bg:          rgba(52, 168, 83, 0.12);
+  --source-docs-color:       #4285f4;
+  --source-docs-bg:          rgba(66, 133, 244, 0.12);
+  --source-notion-color:     var(--text-secondary);
+  --source-notion-bg:        rgba(255, 255, 255, 0.07);
+  --source-github-color:     var(--text-secondary);
+  --source-github-bg:        rgba(255, 255, 255, 0.07);
+  --source-analytics-color:  var(--color-orange);
+  --source-analytics-bg:     var(--color-orange-muted);
 
 
   /* ─────────────────────────────

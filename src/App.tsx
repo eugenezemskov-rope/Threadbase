@@ -12,6 +12,8 @@ import { SelectDropdown } from './components/primitives/SelectDropdown'
 import { ProjectOverviewPage } from './pages/ProjectOverviewPage'
 import { TopicPage } from './pages/TopicPage'
 import { HomePage } from './pages/HomePage'
+import { MyTasksPage } from './pages/MyTasksPage'
+import { TOPIC_MAP } from './data/projectData'
 import { useState } from 'react'
 import './styles/styleguide.css'
 
@@ -131,19 +133,37 @@ function SelectDropdownDemo() {
 }
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'overview' | 'topic' | 'ds'>('home')
-  const [activeTab, setActiveTab] = useState('details')
+  const [view, setView]               = useState<'home' | 'overview' | 'topic' | 'tasks' | 'ds'>('home')
+  const [activeTab, setActiveTab]     = useState('details')
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
+  const [activeTopicId, setActiveTopicId] = useState<string | null>(null)
 
   if (view === 'home') {
-    return <HomePage onProjectClick={() => setView('overview')} />
+    return <HomePage
+      onProjectClick={(id) => { setActiveProjectId(id); setActiveTopicId(null); setView('overview') }}
+      onTasksClick={() => setView('tasks')}
+    />
   }
 
-  if (view === 'overview') {
-    return <ProjectOverviewPage onTopicClick={() => setView('topic')} onHome={() => setView('home')} />
-  }
-
-  if (view === 'topic') {
-    return <TopicPage onBack={() => setView('overview')} onHome={() => setView('home')} />
+  if (view !== 'ds') {
+    return (
+      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+        <Sidebar
+          activeNav={view === 'tasks' ? 'tasks' : 'projects'}
+          activeProjectId={activeProjectId}
+          activeTopicId={activeTopicId}
+          onHomeClick={() => { setActiveProjectId(null); setActiveTopicId(null); setView('home') }}
+          onTasksClick={() => { setActiveProjectId(null); setActiveTopicId(null); setView('tasks') }}
+          onProjectClick={(id) => { setActiveProjectId(id); setActiveTopicId(null); setView('overview') }}
+          onTopicClick={(_projectId, topicId) => { setActiveProjectId(null); setActiveTopicId(topicId); setView('topic') }}
+        />
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {view === 'overview' && <ProjectOverviewPage activeProjectId={activeProjectId} onTopicClick={id => { setActiveProjectId(null); setActiveTopicId(id); setView('topic') }} onHome={() => { setActiveProjectId(null); setActiveTopicId(null); setView('home') }} />}
+          {view === 'topic'    && <TopicPage activeTopicId={activeTopicId} onBack={() => { const t = activeTopicId ? TOPIC_MAP[activeTopicId] : null; setActiveProjectId(t?.projectId ?? null); setActiveTopicId(null); setView('overview') }} onHome={() => { setActiveProjectId(null); setActiveTopicId(null); setView('home') }} />}
+          {view === 'tasks'    && <MyTasksPage />}
+        </div>
+      </div>
+    )
   }
 
   return (

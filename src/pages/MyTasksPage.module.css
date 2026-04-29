@@ -1,0 +1,373 @@
+.page {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.header {
+  padding: var(--space-3xl) var(--space-3xl) var(--space-xl);
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3xl) var(--space-md);
+  flex-shrink: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.filterBtn,
+.groupByBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.filterBtn:hover,
+.groupByBtn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* Content area */
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Grid: priority | task | topic | status | due | owner | menu */
+.colHeaders,
+.taskRow {
+  display: grid;
+  grid-template-columns: 84px 1fr 148px 120px 96px 80px 32px;
+  align-items: center;
+  padding: 0 var(--space-3xl);
+}
+
+.taskRow {
+  position: relative;
+}
+
+.colHeaders {
+  flex-shrink: 0;
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.colCheckbox {
+  /* empty — aligns with checkbox button */
+}
+
+.colLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.groups {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: var(--space-3xl);
+}
+.groups::-webkit-scrollbar { width: 8px; }
+.groups::-webkit-scrollbar-track { background: transparent; }
+.groups::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+  border-left: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+.group {
+  margin-top: var(--space-md);
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-3xl);
+}
+
+.groupDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.groupName {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.groupCount {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Task row */
+.taskRow {
+  min-height: 40px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.taskRow:hover {
+  background: var(--bg-elevated);
+}
+
+.taskRowDone {
+  opacity: 0.45;
+}
+
+/* Checkbox */
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.checkboxDone {
+  background: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.checkmark {
+  font-size: 10px;
+  color: #fff;
+  line-height: 1;
+  margin-top: -1px;
+}
+
+/* Priority */
+.priorityCell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.priorityDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.priorityLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+}
+
+/* Task title */
+.taskTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: var(--space-md);
+}
+.taskTitleDone {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+/* Topic */
+.topicCell {
+  padding-right: var(--space-md);
+  min-width: 0;
+}
+
+.topicTag {
+  display: inline-block;
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--space-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Status */
+.statusCell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.statusBadge {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  border: 1px solid;
+  border-radius: var(--radius-pill);
+  padding: 1px var(--space-sm) 2px;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+/* Due date */
+.dueCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+.dueCellOverdue {
+  color: var(--color-red);
+}
+
+/* Owner */
+.ownerCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.commentCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* Kebab menu */
+.menuWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.menuBtn:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-sm);
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+.dropdownItem:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.dropdownSeparator {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-xs) 0;
+}
+
+.dropdownItemDanger {
+  color: var(--color-red);
+}
+.dropdownItemDanger:hover {
+  background: var(--color-red-muted);
+  color: var(--color-red);
+}

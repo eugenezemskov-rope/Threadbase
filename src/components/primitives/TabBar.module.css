@@ -35,7 +35,7 @@
   border: 1px solid var(--border-default);
   color: var(--text-tertiary);
   border-radius: var(--radius-pill);
-  padding: 1px 6px;
+  padding: 0 6px 2px;
   min-width: 18px;
   text-align: center;
 }

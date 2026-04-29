@@ -136,10 +136,79 @@
   gap: var(--space-sm);
   cursor: pointer;
   transition: border-color var(--duration-fast), background var(--duration-fast);
+  position: relative;
 }
 .card:hover {
   border-color: var(--border-strong);
   background: var(--bg-elevated);
+}
+
+.cardMenu {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+}
+
+.cardMenuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.cardMenuBtn:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.cardDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-sm);
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+.dropdownItem:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.dropdownSeparator {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-xs) 0;
+}
+
+.dropdownItemDanger {
+  color: var(--color-red);
+}
+.dropdownItemDanger:hover {
+  background: var(--color-red-muted);
+  color: var(--color-red);
 }
 
 .cardPriority {

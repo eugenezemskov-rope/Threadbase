@@ -1,99 +1,152 @@
-import { Plus, ArrowDownUp, ArrowRight, Link2 } from 'lucide-react'
-import { Sidebar } from '../components/layout/Sidebar'
+import { useState, useRef, useEffect } from 'react'
+import { Plus, ArrowDownUp, ArrowRight, Link2, MoreVertical, Link, Copy, FolderInput, CheckCircle2, Archive, Trash2 } from 'lucide-react'
 import { HeaderBar } from '../components/layout/HeaderBar'
 import { DecisionBlock } from '../components/topic/DecisionBlock'
+import type { Decision } from '../components/topic/DecisionBlock'
+import { DecisionModal } from '../components/interactive/DecisionModal'
 import { ContextNode } from '../components/topic/ContextNode'
 import { RightPanel } from '../components/topic/RightPanel'
+import { TOPIC_MAP, ALL_TASKS } from '../data/projectData'
 import styles from './TopicPage.module.css'
 
-const TOPICS_IN_PROJECT = [
-  { id: '1', name: 'Rebrand Launch',   active: true },
-  { id: '2', name: 'API v3 Migration' },
-  { id: '3', name: 'Q3 Budget Review' },
-]
-
-const MEMBERS = [
-  { name: 'Alex Kim',    color: 'var(--color-blue)' },
-  { name: 'Max Rivera',  color: 'var(--color-green)' },
-  { name: 'Jake Lee',    color: 'var(--color-orange)' },
-  { name: 'Dana Song',   color: 'var(--color-purple)' },
-]
+const STATUS_LABEL: Record<string, string> = {
+  active:   'Active',
+  decided:  'Decided',
+  resolved: 'Resolved',
+  archived: 'Archived',
+}
 
 interface TopicPageProps {
+  activeTopicId?: string | null
   onBack?: () => void
   onHome?: () => void
 }
 
-export function TopicPage({ onBack, onHome }: TopicPageProps) {
+export function TopicPage({ activeTopicId, onBack, onHome }: TopicPageProps) {
+  const topic      = TOPIC_MAP[activeTopicId ?? 't1'] ?? TOPIC_MAP['t1']
+  const topicTasks = ALL_TASKS.filter(t => t.topicId === topic.id)
+
+  const [topicMenuOpen, setTopicMenuOpen] = useState(false)
+  const topicMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!topicMenuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (topicMenuRef.current && !topicMenuRef.current.contains(e.target as Node)) {
+        setTopicMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [topicMenuOpen])
+
+  const [decision, setDecision]                   = useState<Decision | undefined>(undefined)
+  const [decisionModalOpen, setDecisionModalOpen] = useState(false)
+  const [decisionModalMode, setDecisionModalMode] = useState<'create' | 'edit'>('create')
+
+  function openCreateDecision() { setDecisionModalMode('create'); setDecisionModalOpen(true) }
+  function openEditDecision()   { setDecisionModalMode('edit');   setDecisionModalOpen(true) }
+
+  function handleConfirmDecision(d: Decision) { setDecision(d); setDecisionModalOpen(false) }
+  function handleRemoveDecision()             { setDecision(undefined) }
 
   return (
     <div className={styles.page}>
-      <Sidebar
-        mode="topic"
-        topics={TOPICS_IN_PROJECT}
-        onBackClick={onBack}
-        onHomeClick={onHome}
-      />
-
       <div className={styles.main}>
         <HeaderBar
           breadcrumb={[
-            { label: 'Product Launch', onClick: onBack },
-            { label: 'Rebrand Launch' },
+            { label: topic.projectName, onClick: onBack },
+            { label: topic.title },
           ]}
           onHomeClick={onHome}
-          members={MEMBERS}
-          memberCount={12}
+          members={topic.members}
+          memberCount={topic.members.length}
         />
 
         <div className={styles.content}>
-          {/* Topic header */}
           <div className={styles.topicHeader}>
-            <div className={styles.statusRow}>
-              <span className={styles.statusBadge}>
-                <span className={styles.statusDot} />
-                <span className={styles.statusBadgeText}>Active</span>
-              </span>
-              <span className={styles.topicMeta}>
-                Created by
-                <span className={styles.topicMetaName} style={{ color: 'var(--color-blue)' }}>Alex Kim</span>
-                · Apr 18
-              </span>
+            <div className={styles.topicHeaderRow}>
+              <div className={styles.statusRow}>
+                <span className={styles.statusBadge}>
+                  <span className={styles.statusDot} />
+                  <span className={styles.statusBadgeText}>{STATUS_LABEL[topic.status] ?? 'Active'}</span>
+                </span>
+                <span className={styles.topicMeta}>
+                  Created by
+                  <span className={styles.topicMetaName} style={{ color: topic.createdBy.color }}>
+                    {topic.createdBy.name}
+                  </span>
+                  · {topic.createdAt}
+                </span>
+              </div>
+              <div className={styles.topicActions}>
+                <button className={styles.copyLinkBtn}>
+                  <Link size={13} strokeWidth={1.5} />
+                  Copy link
+                </button>
+                <div ref={topicMenuRef} className={styles.topicMenu}>
+                  <button className={styles.topicMenuBtn} onClick={() => setTopicMenuOpen(v => !v)}>
+                    <MoreVertical size={16} strokeWidth={1.5} />
+                  </button>
+                  {topicMenuOpen && (
+                    <div className={styles.topicDropdown}>
+                      <button className={styles.topicDropdownItem} onClick={() => setTopicMenuOpen(false)}>
+                        <Copy size={13} strokeWidth={1.5} />
+                        Duplicate
+                      </button>
+                      <button className={styles.topicDropdownItem} onClick={() => setTopicMenuOpen(false)}>
+                        <FolderInput size={13} strokeWidth={1.5} />
+                        Move to project…
+                        <ArrowRight size={11} strokeWidth={1.5} className={styles.topicDropdownArrow} />
+                      </button>
+                      <button className={styles.topicDropdownItem} onClick={() => setTopicMenuOpen(false)}>
+                        <CheckCircle2 size={13} strokeWidth={1.5} />
+                        Mark as Resolved
+                      </button>
+                      <button className={styles.topicDropdownItem} onClick={() => setTopicMenuOpen(false)}>
+                        <Archive size={13} strokeWidth={1.5} />
+                        Archive
+                      </button>
+                      <div className={styles.topicDropdownSeparator} />
+                      <button className={`${styles.topicDropdownItem} ${styles.topicDropdownItemDanger}`} onClick={() => setTopicMenuOpen(false)}>
+                        <Trash2 size={13} strokeWidth={1.5} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <h1 className={styles.topicTitle}>Rebrand Launch</h1>
-            <p className={styles.topicDesc}>
-              Complete visual rebrand across all customer-facing touchpoints.
-              New brand guidelines, design system update, and rollout plan.
-            </p>
+            <h1 className={styles.topicTitle}>{topic.title}</h1>
+            <p className={styles.topicDesc}>{topic.description}</p>
 
             <div className={styles.linkedTopics}>
-              <span className={styles.linkedLabel}>
-                <Link2 size={11} strokeWidth={1.5} />
-                Linked
-              </span>
-              {[
-                { id: '1', title: 'Q3 Budget Review',    relation: 'Shared decision' },
-                { id: '2', title: 'Design System Update', relation: 'Related context' },
-              ].map(t => (
-                <button key={t.id} className={styles.linkedChip}>
-                  {t.title}
-                  <span className={styles.linkedRelation}>{t.relation}</span>
-                  <ArrowRight size={10} strokeWidth={1.5} />
-                </button>
-              ))}
+              {(topic.linkedTopics?.length ?? 0) > 0 && (
+                <>
+                  <span className={styles.linkedLabel}>
+                    <Link2 size={11} strokeWidth={1.5} />
+                    Linked
+                  </span>
+                  {topic.linkedTopics!.map(t => (
+                    <button key={t.id} className={styles.linkedChip}>
+                      {t.title}
+                      <span className={styles.linkedRelation}>{t.relation}</span>
+                      <ArrowRight size={10} strokeWidth={1.5} />
+                    </button>
+                  ))}
+                </>
+              )}
               <button className={styles.linkedAdd}>+ Link</button>
             </div>
           </div>
 
-          {/* Decision block */}
           <DecisionBlock
-            status="decided"
-            text="Go with Option A — evolutionary rebrand, preserving existing brand equity"
-            decidedAt="Apr 20"
-            onViewRationale={() => {}}
+            decision={decision}
+            onAddDecision={openCreateDecision}
+            onEditDecision={openEditDecision}
+            onRemoveDecision={handleRemoveDecision}
           />
 
-          {/* Context nodes */}
           <div className={styles.contextSection}>
             <div className={styles.contextHeader}>
               <span className={styles.contextLabel}>Context</span>
@@ -110,48 +163,36 @@ export function TopicPage({ onBack, onHome }: TopicPageProps) {
             </div>
 
             <div className={styles.nodeList}>
-              <ContextNode
-                type="date"
-                title="Launch date: June 15"
-                description="Confirmed with engineering that June 15 works if legal comes through."
-                sourceLabel="Product Sync Call · Apr 22"
-                sourceLink="Open summary"
-                createdBy={{ name: 'Alex Kim', color: 'var(--color-blue)' }}
-                starred
-              />
-              <ContextNode
-                type="blocker"
-                title="Legal review pending on new logo"
-                description="Legal team needs 5 business days to review the updated logo. This is a hard dependency for the June 15 launch."
-                sourceQuote="We can't ship the new logo without legal sign-off. They said minimum 5 business days, and they haven't started yet. We need to escalate or the date slips."
-                sourceLabel="Slack #rebrand · Apr 23, 14:32"
-                sourceLink="Open in Slack"
-                createdBy={{ name: 'Jake Lee',  color: 'var(--color-orange)' }}
-                myNote="Need to ping Sarah about expediting this — she knows someone in legal"
-                starred
-              />
-              <ContextNode
-                type="budget"
-                title="Budget approved: $45k for external agency"
-                description="Finance confirmed budget allocation for external design agency."
-                sourceLabel="Google Doc — Budget Q3 · Apr 21"
-                sourceLink="Open doc"
-                createdBy={{ name: 'Dana Song', color: 'var(--color-purple)' }}
-              />
-              <ContextNode
-                type="fact"
-                title="Competitor X rebranded — 20% traffic lift"
-                description="Market data suggests rebrand can drive measurable traffic growth."
-                sourceLabel="Research doc · Apr 19"
-                sourceLink="Open doc"
-                createdBy={{ name: 'Max Rivera', color: 'var(--color-green)' }}
-              />
+              {topic.nodes.map((node, i) => (
+                <ContextNode
+                  key={i}
+                  type={node.type}
+                  title={node.title}
+                  description={node.description}
+                  sourceLabel={node.sourceLabel}
+                  sourceType={node.sourceType}
+                  sourceLink={node.sourceLink}
+                  sourceQuote={node.sourceQuote}
+                  createdBy={node.createdBy}
+                  myNote={node.myNote}
+                  starred={node.starred}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      <RightPanel taskCount={5} />
+      <RightPanel tasks={topicTasks} />
+
+      <DecisionModal
+        isOpen={decisionModalOpen}
+        onClose={() => setDecisionModalOpen(false)}
+        onConfirm={handleConfirmDecision}
+        topicName={topic.title}
+        existingTasks={topicTasks}
+        initialDecision={decisionModalMode === 'edit' ? decision : undefined}
+      />
     </div>
   )
 }

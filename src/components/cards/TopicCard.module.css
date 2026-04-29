@@ -37,10 +37,10 @@
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-wide);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   padding: 3px var(--space-sm);
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-strong);
 }
 
 .badgeText {
@@ -53,6 +53,11 @@
   border-radius: var(--radius-pill);
   flex-shrink: 0;
 }
+
+.badge_active   { border-color: var(--status-active-color);   color: var(--status-active-color); }
+.badge_decided  { border-color: var(--status-decided-color);  color: var(--status-decided-color); }
+.badge_resolved { border-color: var(--status-resolved-color); color: var(--status-resolved-color); }
+.badge_archived { border-color: var(--status-archived-color); }
 
 .badge_active   .badgeDot { background: var(--status-active-color); }
 .badge_decided  .badgeDot { background: var(--status-decided-color); }

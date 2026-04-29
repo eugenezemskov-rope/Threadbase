@@ -1,5 +1,8 @@
-import { Plus, ArrowRight, Search, Calendar } from 'lucide-react'
+import { Plus, ArrowRight, Search, Calendar, CheckSquare, MoreVertical, MoreHorizontal, ArrowRightCircle, Copy, Link, Trash2, MessageSquare, Inbox, CheckCircle2, UserPlus, Tag, CornerDownRight, Pencil, Archive, Pin } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
 import { AvatarGroup } from '../components/primitives/AvatarGroup'
+import { TaskCardModal } from '../components/project/TaskCardModal'
+import type { TaskDetail } from '../components/project/TaskCardModal'
 import styles from './HomePage.module.css'
 
 const PROJECTS = [
@@ -95,66 +98,310 @@ const PRIORITY_COLOR: Record<TaskPriority, string> = {
   low:    'var(--text-disabled)',
 }
 
-const ACTIVITY = [
+type ActivityType = 'comment' | 'suggestion' | 'decision' | 'task' | 'topic'
+
+interface ActivityItem {
+  id: string
+  type: ActivityType
+  actor: { name: string; color: string }
+  verb: string
+  subject: string
+  subjectBold?: boolean
+  time: string
+  preview?: string
+  replies?: { count: number; avatars: { name: string; color: string }[] }
+}
+
+const ACTIVITY: ActivityItem[] = [
   {
     id: '1',
-    title: 'Reply to your comment',
-    body: 'Max Rivera replied in Rebrand Launch:',
-    quote: '"Palette looks solid. Secondary blue might not pass AA on light backgrounds."',
+    type: 'comment',
+    actor: { name: 'Max Rivera', color: 'var(--color-green)' },
+    verb: 'replied to your comment in',
+    subject: 'Rebrand Launch',
+    subjectBold: true,
     time: '2h ago',
-    action: null,
+    preview: '"Palette looks solid. Secondary blue might not pass AA on light backgrounds."',
+    replies: { count: 6, avatars: [{ name: 'Anna Kim', color: 'var(--color-blue)' }, { name: 'Jake Lee', color: 'var(--color-orange)' }] },
   },
   {
     id: '2',
-    title: '3 new context suggestions',
-    body: 'Product Launch · from Product Sync Call',
+    type: 'suggestion',
+    actor: { name: 'System', color: 'var(--color-blue)' },
+    verb: '3 new context suggestions in',
+    subject: 'Product Launch',
+    subjectBold: true,
     time: '3h ago',
-    action: 'Open triage',
+    preview: 'From Product Sync Call recording',
   },
   {
     id: '3',
-    title: 'Decision made',
-    body: 'Q3 Budget Review → Budget allocated.',
+    type: 'decision',
+    actor: { name: 'Dana Song', color: 'var(--color-purple)' },
+    verb: 'recorded a decision in',
+    subject: 'Q3 Budget Review',
+    subjectBold: true,
     time: '5h ago',
-    action: 'View decision',
+    preview: 'Budget allocated for external agency — $45k approved.',
   },
   {
     id: '4',
-    title: 'Task assigned to you',
-    body: '"Update brand guidelines doc" in Rebrand Launch · Due Jun 1',
+    type: 'task',
+    actor: { name: 'Alex Kim', color: 'var(--color-blue)' },
+    verb: 'assigned you a task in',
+    subject: 'Rebrand Launch',
+    subjectBold: true,
     time: '1d ago',
-    action: null,
+    preview: 'Update brand guidelines doc · Due Jun 1',
   },
   {
     id: '5',
-    title: 'Reply in API v3 Migration',
-    body: 'Jake Lee: "Breaking change list is ready for review."',
+    type: 'topic',
+    actor: { name: 'Dana Song', color: 'var(--color-purple)' },
+    verb: 'added you to',
+    subject: 'API v3 Migration',
+    subjectBold: true,
     time: '1d ago',
-    action: null,
   },
   {
     id: '6',
-    title: 'Node starred by Anna Kim',
-    body: '"Launch date: June 15" in Rebrand Launch',
+    type: 'comment',
+    actor: { name: 'Jake Lee', color: 'var(--color-orange)' },
+    verb: 'commented in',
+    subject: 'API v3 Migration',
+    subjectBold: true,
     time: '2d ago',
-    action: null,
+    preview: '"Breaking change list is ready for review."',
+    replies: { count: 3, avatars: [{ name: 'Dana Song', color: 'var(--color-purple)' }, { name: 'Alex Kim', color: 'var(--color-blue)' }] },
   },
 ]
 
-interface HomePageProps {
-  onProjectClick?: (id: string) => void
+const ACTIVITY_ICON: Record<ActivityType, React.ReactNode> = {
+  comment:    <MessageSquare size={11} strokeWidth={1.5} />,
+  suggestion: <Inbox         size={11} strokeWidth={1.5} />,
+  decision:   <CheckCircle2  size={11} strokeWidth={1.5} />,
+  task:       <Tag           size={11} strokeWidth={1.5} />,
+  topic:      <UserPlus      size={11} strokeWidth={1.5} />,
 }
 
-export function HomePage({ onProjectClick }: HomePageProps) {
+const ACTIVITY_ICON_COLOR: Record<ActivityType, string> = {
+  comment:    'var(--color-blue)',
+  suggestion: 'var(--color-orange)',
+  decision:   'var(--color-green)',
+  task:       'var(--color-purple)',
+  topic:      'var(--color-blue)',
+}
+
+interface Project {
+  id: string; name: string; color: string; topicCount: number; taskCount: number
+  memberCount: number; triageCount: number; updatedAt: string
+  members: { name: string; color: string }[]
+}
+
+function ProjectCard({ p, onClick }: { p: Project; onClick: () => void }) {
+  const [menuOpen, setMenuOpen]       = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
+
+  return (
+    <>
+      <div className={styles.projectCard} onClick={onClick}>
+        <div className={styles.projectCardAccent} style={{ background: p.color }} />
+        <div className={styles.projectCardBody}>
+          <div ref={menuRef} className={styles.projectCardMenu} onClick={e => e.stopPropagation()}>
+            <button className={styles.projectCardMenuBtn} onClick={() => setMenuOpen(v => !v)}>
+              <MoreHorizontal size={13} strokeWidth={1.5} />
+            </button>
+            {menuOpen && (
+              <div className={styles.projectCardDropdown}>
+                <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                  <Pencil size={13} strokeWidth={1.5} />
+                  Rename
+                </button>
+                <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                  <Copy size={13} strokeWidth={1.5} />
+                  Duplicate
+                </button>
+                <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                  <Pin size={13} strokeWidth={1.5} />
+                  Pin to top
+                </button>
+                <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                  <Archive size={13} strokeWidth={1.5} />
+                  Archive
+                </button>
+                <div className={styles.dropdownSeparator} />
+                <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => { setMenuOpen(false); setConfirmDelete(true) }}>
+                  <Trash2 size={13} strokeWidth={1.5} />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+          <span className={styles.projectCardName}>{p.name}</span>
+          <div className={styles.projectCardMeta}>
+            <span>{p.topicCount} topics</span>
+            <span className={styles.metaDot}>·</span>
+            <span>{p.taskCount} tasks</span>
+            <span className={styles.metaDot}>·</span>
+            <span>{p.memberCount} members</span>
+          </div>
+          {p.triageCount > 0 ? (
+            <div className={styles.triageBadge}>
+              <span className={styles.triageDot} />
+              <span className={styles.triageBadgeText}>{p.triageCount} to triage</span>
+            </div>
+          ) : (
+            <span className={styles.allReviewed}>✓ All reviewed</span>
+          )}
+          <div className={styles.projectCardFooter}>
+            <span className={styles.updatedAt}>Updated {p.updatedAt}</span>
+            <AvatarGroup avatars={p.members} size="sm" max={3} totalCount={p.memberCount} />
+          </div>
+        </div>
+      </div>
+
+      {confirmDelete && (
+        <div className={styles.confirmBackdrop} onClick={() => setConfirmDelete(false)}>
+          <div className={styles.confirmDialog} onClick={e => e.stopPropagation()}>
+            <h4 className={styles.confirmTitle}>Delete "{p.name}"?</h4>
+            <p className={styles.confirmText}>This will permanently delete the project and all its topics and tasks.</p>
+            <div className={styles.confirmActions}>
+              <button className="sg-btn sg-btn--secondary sg-btn--md" onClick={() => setConfirmDelete(false)}>
+                <span className="sg-btn-text">Cancel</span>
+              </button>
+              <button
+                className="sg-btn sg-btn--primary sg-btn--md"
+                style={{ background: 'var(--color-red)', borderColor: 'var(--color-red)' }}
+                onClick={() => setConfirmDelete(false)}
+              >
+                <span className="sg-btn-text">Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+function HomeTaskCard({ t, onOpen }: { t: MyTask; onOpen: (t: MyTask) => void }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
+
+  return (
+    <div className={styles.taskCard} onClick={() => onOpen(t)}>
+      <div className={styles.taskCardPriority}>
+        <span className={styles.taskPriorityDot} style={{ background: PRIORITY_COLOR[t.priority] }} />
+        <span className={styles.taskPriorityLabel} style={{ color: PRIORITY_COLOR[t.priority] }}>
+          {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+        </span>
+      </div>
+
+      <div ref={menuRef} className={styles.taskCardMenu} onClick={e => e.stopPropagation()}>
+        <button className={styles.taskCardMenuBtn} onClick={() => setMenuOpen(v => !v)}>
+          <MoreHorizontal size={13} strokeWidth={1.5} />
+        </button>
+        {menuOpen && (
+          <div className={styles.taskCardDropdown}>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <ArrowRightCircle size={13} strokeWidth={1.5} />
+              Move to topic
+            </button>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <Copy size={13} strokeWidth={1.5} />
+              Duplicate
+            </button>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <Link size={13} strokeWidth={1.5} />
+              Copy link
+            </button>
+            <div className={styles.dropdownSeparator} />
+            <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => setMenuOpen(false)}>
+              <Trash2 size={13} strokeWidth={1.5} />
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+
+      <p className={styles.taskCardTitle}>{t.title}</p>
+      <span className={styles.taskTopicTag}>{t.topic}</span>
+      <div className={styles.taskCardFooter}>
+        <AvatarGroup avatars={[{ name: 'Eugene Z.', color: 'var(--color-blue)' }]} size="sm" max={1} />
+        {t.dueDate && (
+          <span className={`${styles.taskCardDue} ${t.priority === 'urgent' ? styles.taskCardDueUrgent : ''}`}>
+            <Calendar size={10} strokeWidth={1.5} />
+            {t.dueDate}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+interface HomePageProps {
+  onProjectClick?: (id: string) => void
+  onTasksClick?: () => void
+}
+
+export function HomePage({ onProjectClick, onTasksClick }: HomePageProps) {
+  const [modalTask, setModalTask] = useState<TaskDetail | null>(null)
+  const [readItems, setReadItems] = useState<Set<string>>(new Set())
+
+  function openTask(t: MyTask) {
+    setModalTask({
+      id:          t.id,
+      title:       t.title,
+      description: '',
+      priority:    t.priority,
+      status:      t.status === 'done' ? 'done' : t.status === 'in-progress' ? 'in-progress' : 'todo',
+      topic:       t.topic,
+      assignee:    { name: 'Eugene Z.', color: 'var(--color-blue)' },
+      dueDate:     t.dueDate,
+      createdBy:   'Eugene Z.',
+      createdAt:   'Apr 20',
+    })
+  }
+
   return (
     <div className={styles.page}>
+      {modalTask && <TaskCardModal task={modalTask} onClose={() => setModalTask(null)} />}
       <header className={styles.topBar}>
-        <img src={`${import.meta.env.BASE_URL}img/Logo.svg`} alt="ThreadBase" className={styles.logo} />
-        <div className={styles.searchWrap}>
-          <Search size={13} strokeWidth={1.5} className={styles.searchIcon} />
-          <input className={styles.searchInput} placeholder="Search topics, nodes, decisions…" />
+        <div className={styles.topBarLeft}>
+          <img src={`${import.meta.env.BASE_URL}img/Logo.svg`} alt="ThreadBase" className={styles.logo} />
+          <div className={styles.searchWrap}>
+            <Search size={13} strokeWidth={1.5} className={styles.searchIcon} />
+            <input className={styles.searchInput} placeholder="Search topics, nodes, decisions…" />
+          </div>
         </div>
         <div className={styles.topBarRight}>
+          <button className="sg-btn sg-btn--primary sg-btn--md" onClick={onTasksClick}>
+            <CheckSquare size={14} strokeWidth={1.5} />
+            <span className="sg-btn-text">My Tasks</span>
+          </button>
           <button className={styles.profileBtn}>
             <div className={styles.profileAvatar}>E</div>
             <span className={styles.profileName}>Eugene Z.</span>
@@ -181,53 +428,26 @@ export function HomePage({ onProjectClick }: HomePageProps) {
                 </button>
               </div>
               <div className={styles.sectionDivider} />
-
+              <div className={styles.columnScrollWrap}>
               <div className={styles.columnScroll}>
                 <div className={styles.projectsGrid}>
                   {PROJECTS.map(p => (
-                    <button
-                      key={p.id}
-                      className={styles.projectCard}
-                      onClick={() => onProjectClick?.(p.id)}
-                    >
-                      <div className={styles.projectCardAccent} style={{ background: p.color }} />
-                      <div className={styles.projectCardBody}>
-                        <span className={styles.projectCardName}>{p.name}</span>
-                        <div className={styles.projectCardMeta}>
-                          <span>{p.topicCount} topics</span>
-                          <span className={styles.metaDot}>·</span>
-                          <span>{p.taskCount} tasks</span>
-                          <span className={styles.metaDot}>·</span>
-                          <span>{p.memberCount} members</span>
-                        </div>
-                        {p.triageCount > 0 ? (
-                          <div className={styles.triageBadge}>
-                            <span className={styles.triageDot} />
-                            <span className={styles.triageBadgeText}>{p.triageCount} to triage</span>
-                          </div>
-                        ) : (
-                          <span className={styles.allReviewed}>✓ All reviewed</span>
-                        )}
-                        <div className={styles.projectCardFooter}>
-                          <span className={styles.updatedAt}>Updated {p.updatedAt}</span>
-                          <AvatarGroup avatars={p.members} size="sm" max={3} totalCount={p.memberCount} />
-                        </div>
-                      </div>
-                    </button>
+                    <ProjectCard key={p.id} p={p} onClick={() => onProjectClick?.(p.id)} />
                   ))}
                 </div>
+              </div>
               </div>
             </div>
 
             <div className={styles.tasksColumn}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionLabel}>My Tasks</span>
-                <button className={styles.sectionAction}>View all</button>
+                <button className={styles.sectionAction} onClick={onTasksClick}>View all</button>
               </div>
               <div className={styles.sectionDivider} />
-
+              <div className={styles.columnScrollWrap}>
               <div className={styles.columnScroll}>
-              <div className={styles.taskCardList}>
+                <div className={styles.taskCardList}>
                 {MY_TASKS
                   .filter(t => t.status !== 'done')
                   .sort((a, b) => {
@@ -237,26 +457,9 @@ export function HomePage({ onProjectClick }: HomePageProps) {
                     return new Date(`${a.dueDate} 2026`).getTime() - new Date(`${b.dueDate} 2026`).getTime()
                   })
                   .map(t => (
-                  <div key={t.id} className={styles.taskCard}>
-                    <div className={styles.taskCardPriority}>
-                      <span className={styles.taskPriorityDot} style={{ background: PRIORITY_COLOR[t.priority] }} />
-                      <span className={styles.taskPriorityLabel} style={{ color: PRIORITY_COLOR[t.priority] }}>
-                        {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
-                      </span>
-                    </div>
-                    <p className={styles.taskCardTitle}>{t.title}</p>
-                    <span className={styles.taskTopicTag}>{t.topic}</span>
-                    <div className={styles.taskCardFooter}>
-                      <AvatarGroup avatars={[{ name: 'Eugene Z.', color: 'var(--color-blue)' }]} size="sm" max={1} />
-                      {t.dueDate && (
-                        <span className={`${styles.taskCardDue} ${t.priority === 'urgent' ? styles.taskCardDueUrgent : ''}`}>
-                          <Calendar size={10} strokeWidth={1.5} />
-                          {t.dueDate}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  <HomeTaskCard key={t.id} t={t} onOpen={openTask} />
                 ))}
+              </div>
               </div>
               </div>
             </div>
@@ -264,32 +467,50 @@ export function HomePage({ onProjectClick }: HomePageProps) {
             <div className={styles.activityColumn}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionLabel}>Recent Activity</span>
-                <button className={styles.sectionAction}>View all</button>
+                <button className={styles.sectionAction} onClick={() => setReadItems(new Set(ACTIVITY.map(a => a.id)))}>Clear feed</button>
               </div>
               <div className={styles.sectionDivider} />
-
-              <div className={styles.columnScroll}>
+              <div className={styles.columnScrollWrap}>
+              <div className={`${styles.columnScroll} ${styles.columnScrollFeed}`}>
                 <div className={styles.activityList}>
                   {ACTIVITY.map(a => (
                     <div key={a.id} className={styles.activityItem}>
-                      <div className={styles.activityDot} />
+                      <div className={styles.activityTimeline}>
+                        <div
+                          className={styles.activityIcon}
+                          style={{ color: ACTIVITY_ICON_COLOR[a.type], background: `color-mix(in srgb, ${ACTIVITY_ICON_COLOR[a.type]} 12%, var(--bg-elevated))` }}
+                        >
+                          {ACTIVITY_ICON[a.type]}
+                        </div>
+                        <div className={styles.activityLine} />
+                      </div>
                       <div className={styles.activityContent}>
-                        <div className={styles.activityHeader}>
-                          <span className={styles.activityTitle}>{a.title}</span>
+                        <div className={styles.activityRow}>
+                          <AvatarGroup avatars={[a.actor]} size="sm" max={1} />
+                          <p className={styles.activityText}>
+                            <span className={styles.activityActor}>{a.actor.name}</span>
+                            {' '}{a.verb}{' '}
+                            {a.subjectBold
+                              ? <span className={styles.activitySubject}>{a.subject}</span>
+                              : a.subject}
+                          </p>
                           <span className={styles.activityTime}>{a.time}</span>
                         </div>
-                        <p className={styles.activityBody}>{a.body}</p>
-                        {a.quote && <p className={styles.activityQuote}>{a.quote}</p>}
-                        {a.action && (
-                          <button className={styles.activityAction}>
-                            {a.action}
-                            <ArrowRight size={10} strokeWidth={1.5} />
+                        {a.preview && (
+                          <div className={styles.activityPreview}>{a.preview}</div>
+                        )}
+                        {a.replies && (
+                          <button className={styles.activityReplies}>
+                            <CornerDownRight size={12} strokeWidth={1.5} className={styles.activityRepliesIcon} />
+                            <AvatarGroup avatars={a.replies.avatars} size="sm" max={2} />
+                            <span>View {a.replies.count} more replies</span>
                           </button>
                         )}
                       </div>
                     </div>
                   ))}
                 </div>
+              </div>
               </div>
             </div>
           </div>

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { Plus, Calendar, MessageSquare, Pin, ChevronDown } from 'lucide-react'
+import { Plus, Calendar, ChevronDown, MoreHorizontal, ArrowRightCircle, Copy, Link, Trash2 } from 'lucide-react'
 import { AvatarGroup } from '../primitives/AvatarGroup'
 import { TaskCardModal, type TaskDetail } from './TaskCardModal'
+import { ALL_TASKS } from '../../data/projectData'
 import styles from './TaskBoard.module.css'
 
 type Priority = 'urgent' | 'high' | 'medium' | 'low'
@@ -17,53 +18,7 @@ interface Task {
   assignee: { name: string; color?: string }
   dueDate?: string
   comments?: number
-  pins?: number
   status: ColStatus
-}
-
-const TASKS: Task[] = [
-  { id: '1',  title: 'Brief external agency',        priority: 'medium', topic: 'Rebrand Launch',      assignee: { name: 'Max Rivera',  color: 'var(--color-green)'  }, pins: 1,                          status: 'todo'        },
-  { id: '2',  title: 'Create migration guide',        priority: 'high',   topic: 'API v3 Migration',    assignee: { name: 'Jake Lee',    color: 'var(--color-orange)' }, comments: 2, pins: 2, blocked: true, status: 'todo'     },
-  { id: '3',  title: 'Design new email templates',    priority: 'low',    topic: 'Rebrand Launch',      assignee: { name: 'Alex Kim',    color: 'var(--color-blue)'   },                                    status: 'todo'        },
-  { id: '4',  title: 'Update pricing page copy',                          topic: 'Growth Experiments',  assignee: { name: 'Alex Kim',    color: 'var(--color-blue)'   },                                    status: 'todo'        },
-  { id: '5',  title: 'Update brand guidelines doc',   priority: 'high',   topic: 'Rebrand Launch',      assignee: { name: 'Alex Kim',    color: 'var(--color-blue)'   }, dueDate: 'Jun 1',  comments: 3, pins: 2, status: 'in-progress' },
-  { id: '6',  title: 'Get legal sign-off on logo',    priority: 'urgent', topic: 'Rebrand Launch',      assignee: { name: 'Jake Lee',    color: 'var(--color-orange)' }, dueDate: 'May 28', comments: 1, pins: 1, blocked: true, status: 'in-progress' },
-  { id: '7',  title: 'Audit current API endpoints',   priority: 'medium', topic: 'API v3 Migration',    assignee: { name: 'Dana Song',   color: 'var(--color-purple)' }, comments: 4, pins: 3,               status: 'in-progress' },
-  { id: '8',  title: 'Color palette v2',              priority: 'high',   topic: 'Rebrand Launch',      assignee: { name: 'Alex Kim',    color: 'var(--color-blue)'   }, comments: 5, pins: 2,               status: 'review'      },
-  { id: '9',  title: 'Onboarding flow mockups',       priority: 'medium', topic: 'Customer Onboarding', assignee: { name: 'Max Rivera',  color: 'var(--color-green)'  }, comments: 2, pins: 1,               status: 'review'      },
-  { id: '10', title: 'Finalize Q3 budget',                                topic: 'Q3 Budget Review',    assignee: { name: 'Dana Song',   color: 'var(--color-purple)' }, comments: 3, pins: 2,               status: 'done'        },
-  { id: '11', title: 'Competitive analysis doc',                          topic: 'Growth Experiments',  assignee: { name: 'Max Rivera',  color: 'var(--color-green)'  }, comments: 1, pins: 4,               status: 'done'        },
-  { id: '12', title: 'Brand moodboard',                                   topic: 'Rebrand Launch',      assignee: { name: 'Alex Kim',    color: 'var(--color-blue)'   }, comments: 6, pins: 1,               status: 'done'        },
-]
-
-const TASK_DETAILS: Record<string, Partial<TaskDetail>> = {
-  '6': {
-    description: 'Coordinate with legal team to get approval on the updated logo. This is a hard dependency for the June 15 launch date.',
-    createdBy: 'Anna Kim',
-    createdAt: 'Apr 22',
-    linkedNodes: [
-      { id: 'n1', type: 'blocker', title: 'Legal review pending on new logo', source: 'Slack #rebrand · Apr 23' },
-      { id: 'n2', type: 'date',    title: 'Launch date: June 15',             source: 'Product Sync Call · Apr 22' },
-    ],
-    comments: [
-      { id: 'c1', author: { name: 'Jake Lee',  color: 'var(--color-orange)' }, timestamp: 'Apr 23, 14:00', text: "Sent the request to legal. They said minimum 5 business days. I'll follow up on Wednesday if no response.", likes: 2 },
-      { id: 'c2', author: { name: 'Anna Kim',  color: 'var(--color-blue)'   }, timestamp: 'Apr 24, 09:30', text: "Can we escalate? If this takes 5 days, we're cutting it very close to June 15. Maybe Sarah can help.", likes: 1 },
-      { id: 'c3', author: { name: 'Jake Lee',  color: 'var(--color-orange)' }, timestamp: 'Apr 25, 11:15', text: "Good news — Sarah got us bumped up in the queue. Should hear back by Monday.", likes: 3 },
-    ],
-  },
-  '5': {
-    description: 'Update the brand guidelines document with the new color palette, typography, and logo usage rules.',
-    createdBy: 'Alex Kim',
-    createdAt: 'Apr 20',
-    linkedNodes: [
-      { id: 'n1', type: 'fact', title: 'New brand guidelines approved by leadership', source: 'Google Doc · Apr 20' },
-    ],
-    comments: [
-      { id: 'c1', author: { name: 'Dana Song', color: 'var(--color-purple)' }, timestamp: 'Apr 22, 10:00', text: 'First draft is ready for review. Added the new logo section and color tokens.', likes: 1 },
-      { id: 'c2', author: { name: 'Alex Kim',  color: 'var(--color-blue)'   }, timestamp: 'Apr 22, 14:30', text: 'Looks good. Can you also add the updated type scale before we share with the agency?', likes: 0 },
-      { id: 'c3', author: { name: 'Dana Song', color: 'var(--color-purple)' }, timestamp: 'Apr 23, 09:00', text: 'Done — type scale added. Ready to share.', likes: 2 },
-    ],
-  },
 }
 
 const COLUMNS: { key: ColStatus; label: string }[] = [
@@ -81,18 +36,31 @@ const PRIORITY_LABEL: Record<Priority, string> = {
 }
 
 function toDetail(task: Task): TaskDetail {
-  const extra = TASK_DETAILS[task.id] ?? {}
   return {
     ...task,
-    description: extra.description ?? '',
-    createdBy:   extra.createdBy   ?? 'Unknown',
-    createdAt:   extra.createdAt   ?? '',
-    linkedNodes: extra.linkedNodes ?? [],
-    comments:    extra.comments    ?? [],
+    description: '',
+    createdBy:   task.assignee.name,
+    createdAt:   '',
+    linkedNodes: [],
+    comments:    [],
   }
 }
 
 function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
+
   return (
     <div className={styles.card} onClick={onClick}>
       {task.priority && (
@@ -103,11 +71,36 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
           </span>
         </div>
       )}
+
+      <div ref={menuRef} className={styles.cardMenu} onClick={e => e.stopPropagation()}>
+        <button className={styles.cardMenuBtn} onClick={() => setMenuOpen(v => !v)}>
+          <MoreHorizontal size={13} strokeWidth={1.5} />
+        </button>
+        {menuOpen && (
+          <div className={styles.cardDropdown}>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <ArrowRightCircle size={13} strokeWidth={1.5} />
+              Move to topic
+            </button>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <Copy size={13} strokeWidth={1.5} />
+              Duplicate
+            </button>
+            <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+              <Link size={13} strokeWidth={1.5} />
+              Copy link
+            </button>
+            <div className={styles.dropdownSeparator} />
+            <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => setMenuOpen(false)}>
+              <Trash2 size={13} strokeWidth={1.5} />
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+
       <p className={styles.cardTitle}>{task.title}</p>
       <span className={styles.topicTag}>{task.topic}</span>
-      {task.blocked && (
-        <span className={styles.blockedBadge}>Blocked</span>
-      )}
       <div className={styles.cardFooter}>
         <AvatarGroup avatars={[task.assignee]} size="sm" max={1} />
         <div className={styles.cardMeta}>
@@ -117,26 +110,32 @@ function TaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
               {task.dueDate}
             </span>
           )}
-          {(task.comments ?? 0) > 0 && (
-            <span className={styles.metaItem}>
-              <MessageSquare size={10} strokeWidth={1.5} />
-              {task.comments}
-            </span>
-          )}
-          {(task.pins ?? 0) > 0 && (
-            <span className={styles.metaItem}>
-              <Pin size={10} strokeWidth={1.5} />
-              {task.pins}
-            </span>
-          )}
         </div>
       </div>
     </div>
   )
 }
 
-export function TaskBoard() {
+interface TaskBoardProps {
+  activeProjectId?: string | null
+}
+
+export function TaskBoard({ activeProjectId }: TaskBoardProps) {
   const [selected, setSelected] = useState<TaskDetail | null>(null)
+
+  const TASKS: Task[] = ALL_TASKS
+    .filter(t => !activeProjectId || t.projectId === activeProjectId)
+    .map(t => ({
+      id:       t.id,
+      title:    t.title,
+      priority: t.priority,
+      topic:    t.topicTitle,
+      blocked:  t.blocked,
+      assignee: t.assignee,
+      dueDate:  t.dueDate,
+      comments: t.comments,
+      status:   t.status,
+    }))
 
   return (
     <>

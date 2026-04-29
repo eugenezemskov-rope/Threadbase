@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Calendar, CornerUpLeft, ThumbsUp, ArrowRight, Plus } from 'lucide-react'
+import { X, Calendar, CornerUpLeft, ThumbsUp, ArrowRight, Plus, CalendarDays, AlertCircle, DollarSign, Lightbulb, MoreVertical, ArrowRightCircle, Copy, Link, Trash2 } from 'lucide-react'
 import { AvatarGroup } from '../primitives/AvatarGroup'
 import styles from './TaskCardModal.module.css'
 
@@ -51,6 +51,13 @@ const STATUS_LABELS: Record<ColStatus, string> = {
   'done':        'Done',
 }
 
+const STATUS_COLOR: Record<ColStatus, string> = {
+  'todo':        'var(--text-tertiary)',
+  'in-progress': 'var(--color-blue)',
+  'review':      'var(--color-orange)',
+  'done':        'var(--color-green)',
+}
+
 const PRIORITY_LABEL: Record<Priority, string> = {
   urgent: 'Urgent',
   high:   'High',
@@ -58,15 +65,28 @@ const PRIORITY_LABEL: Record<Priority, string> = {
   low:    'Low',
 }
 
-const NODE_ACCENT: Record<NodeType, string> = {
-  blocker: 'var(--color-red)',
-  date:    'var(--color-blue)',
-  budget:  'var(--color-green)',
-  fact:    'var(--color-orange)',
+const NODE_ICON: Record<NodeType, React.ReactNode> = {
+  blocker: <AlertCircle  size={12} strokeWidth={1.5} />,
+  date:    <CalendarDays size={12} strokeWidth={1.5} />,
+  budget:  <DollarSign  size={12} strokeWidth={1.5} />,
+  fact:    <Lightbulb   size={12} strokeWidth={1.5} />,
 }
 
 export function TaskCardModal({ task, onClose }: TaskCardModalProps) {
   const [draft, setDraft] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
 
   return (
     <AnimatePresence>
@@ -86,17 +106,40 @@ export function TaskCardModal({ task, onClose }: TaskCardModalProps) {
           transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
           onClick={e => e.stopPropagation()}
         >
-          {/* Close */}
-          <button className={styles.closeBtn} onClick={onClose}>
-            <X size={14} strokeWidth={1.5} />
-          </button>
-
           {/* Header */}
           <div className={styles.header}>
             <h2 className={styles.title}>{task.title}</h2>
-            {task.description && (
-              <p className={styles.description}>{task.description}</p>
-            )}
+            <div className={styles.headerActions}>
+            <div ref={menuRef} className={styles.headerMenu}>
+              <button className={styles.headerMenuBtn} onClick={() => setMenuOpen(v => !v)}>
+                <MoreVertical size={14} strokeWidth={1.5} />
+              </button>
+              {menuOpen && (
+                <div className={styles.headerDropdown}>
+                  <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                    <ArrowRightCircle size={13} strokeWidth={1.5} />
+                    Move to topic
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                    <Copy size={13} strokeWidth={1.5} />
+                    Duplicate
+                  </button>
+                  <button className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                    <Link size={13} strokeWidth={1.5} />
+                    Copy link
+                  </button>
+                  <div className={styles.dropdownSeparator} />
+                  <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => setMenuOpen(false)}>
+                    <Trash2 size={13} strokeWidth={1.5} />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+            <button className={styles.closeBtn} onClick={onClose}>
+              <X size={14} strokeWidth={1.5} />
+            </button>
+            </div>
           </div>
 
           <div className={styles.divider} />
@@ -104,9 +147,9 @@ export function TaskCardModal({ task, onClose }: TaskCardModalProps) {
           {/* Meta grid */}
           <div className={styles.metaGrid}>
             <span className={styles.metaLabel}>Status</span>
-            <button className={styles.metaSelect}>
+            <span className={styles.statusBadge} style={{ color: STATUS_COLOR[task.status], borderColor: STATUS_COLOR[task.status] }}>
               {STATUS_LABELS[task.status]}
-            </button>
+            </span>
 
             <span className={styles.metaLabel}>Assignee</span>
             <div className={styles.metaAssignee}>
@@ -143,37 +186,37 @@ export function TaskCardModal({ task, onClose }: TaskCardModalProps) {
           </div>
 
           {/* Linked context */}
-          {task.linkedNodes && task.linkedNodes.length > 0 && (
-            <>
-              <div className={styles.divider} />
-              <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <span className={styles.sectionLabel}>Linked Context</span>
-                  <button className={styles.linkNodeBtn}>
-                    <Plus size={10} strokeWidth={1.5} />
-                    Link node
+          <div className={styles.divider} />
+          <div className={styles.section}>
+            <span className={styles.sectionLabel}>Linked Context</span>
+            <div className={styles.nodeChips}>
+              {task.linkedNodes && task.linkedNodes.map(node => (
+                <div key={node.id} className={styles.nodeChip}>
+                  <span className={styles.nodeChipIcon}>{NODE_ICON[node.type]}</span>
+                  <span className={styles.nodeChipTitle}>{node.title}</span>
+                  <button className={styles.nodeChipRemove}>
+                    <X size={10} strokeWidth={1.5} />
                   </button>
                 </div>
-                <div className={styles.nodeList}>
-                  {task.linkedNodes.map(node => (
-                    <div key={node.id} className={styles.nodeCard}>
-                      <span
-                        className={styles.nodeAccent}
-                        style={{ background: NODE_ACCENT[node.type] }}
-                      />
-                      <div className={styles.nodeBody}>
-                        <span className={styles.nodeTitle}>{node.title}</span>
-                        <span className={styles.nodeSource}>{node.source}</span>
-                      </div>
-                      <button className={styles.nodeViewBtn}>
-                        View <ArrowRight size={10} strokeWidth={1.5} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+              ))}
+              <button className={styles.linkMoreBtn}>
+                <Plus size={11} strokeWidth={1.5} />
+                Link context
+              </button>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className={styles.divider} />
+          <div className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionLabel}>Description</span>
+            </div>
+            {task.description
+              ? <p className={styles.description}>{task.description}</p>
+              : <p className={styles.descriptionEmpty}>Add a description…</p>
+            }
+          </div>
 
           {/* Comments */}
           <div className={styles.divider} />
