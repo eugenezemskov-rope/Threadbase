@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { MoreHorizontal, Link2, Copy, FolderInput, CheckCircle2, Archive, Trash2, ChevronRight } from 'lucide-react'
+import { MoreHorizontal, Link2, Copy, FolderInput, CheckCircle2, Archive, Trash2, ChevronRight, ChevronDown } from 'lucide-react'
 import { AvatarGroup } from '../primitives/AvatarGroup'
 import styles from './TopicCard.module.css'
 
@@ -58,10 +58,11 @@ export function TopicCard({ title, status, nodeCount, taskCount, description, up
     <button className={styles.card} onClick={onClick}>
       <div className={styles.header}>
         <div className={styles.meta}>
-          <span className={`${styles.badge} ${styles[`badge_${status}`]}`}>
+          <button className={`${styles.badge} ${styles[`badge_${status}`]}`} onClick={e => e.stopPropagation()}>
             <span className={styles.badgeDot} />
             <span className={styles.badgeText}>{statusLabel[status]}</span>
-          </span>
+            <ChevronDown size={11} strokeWidth={1.5} className={styles.badgeChevron} />
+          </button>
           <span className={styles.nodeCount}>{nodeCount} nodes</span>
         </div>
         {members.length > 0 && (

@@ -54,9 +54,7 @@
 .statusBadge:hover {
   background: var(--bg-overlay);
 }
-.statusBadge:hover .statusChevron {
-  opacity: 1;
-}
+
 
 .statusBadge_active   { border-color: var(--status-active-color);   color: var(--status-active-color); }
 .statusBadge_decided  { border-color: var(--status-decided-color);  color: var(--status-decided-color); }
@@ -76,8 +74,6 @@
 }
 
 .statusChevron {
-  opacity: 0;
-  transition: opacity var(--duration-fast);
   flex-shrink: 0;
   margin-left: 1px;
 }
