@@ -38,7 +38,7 @@ export function ContextNode({
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [isStarred, setIsStarred] = useState(starred)
 
-  const color = `var(--node-${type}-color)`
+  const color = sourceType ? SOURCE_META[sourceType].color : `var(--node-${type}-color)`
 
   return (
     <div className={`${styles.node} ${expanded ? styles.nodeExpanded : ''}`}>
