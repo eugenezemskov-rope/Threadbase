@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, ArrowDownUp, ArrowRight, Link2, MoreVertical, Link, Copy, FolderInput, CheckCircle2, Archive, Trash2 } from 'lucide-react'
+import { Plus, ArrowDownUp, ArrowRight, Link2, MoreVertical, Link, Copy, FolderInput, CheckCircle2, Archive, Trash2, ChevronDown } from 'lucide-react'
 import { HeaderBar } from '../components/layout/HeaderBar'
 import { DecisionBlock } from '../components/topic/DecisionBlock'
 import type { Decision } from '../components/topic/DecisionBlock'
@@ -67,10 +67,11 @@ export function TopicPage({ activeTopicId, onBack, onHome }: TopicPageProps) {
           <div className={styles.topicHeader}>
             <div className={styles.topicHeaderRow}>
               <div className={styles.statusRow}>
-                <span className={styles.statusBadge}>
+                <button className={`${styles.statusBadge} ${styles[`statusBadge_${topic.status}`]}`}>
                   <span className={styles.statusDot} />
                   <span className={styles.statusBadgeText}>{STATUS_LABEL[topic.status] ?? 'Active'}</span>
-                </span>
+                  <ChevronDown size={11} strokeWidth={1.5} className={styles.statusChevron} />
+                </button>
                 <span className={styles.topicMeta}>
                   Created by
                   <span className={styles.topicMetaName} style={{ color: topic.createdBy.color }}>

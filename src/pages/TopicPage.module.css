@@ -47,8 +47,21 @@
   color: var(--text-tertiary);
   padding: 3px var(--space-sm);
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: background var(--duration-fast), opacity var(--duration-fast);
 }
+.statusBadge:hover {
+  background: var(--bg-overlay);
+}
+.statusBadge:hover .statusChevron {
+  opacity: 1;
+}
+
+.statusBadge_active   { border-color: var(--status-active-color);   color: var(--status-active-color); }
+.statusBadge_decided  { border-color: var(--status-decided-color);  color: var(--status-decided-color); }
+.statusBadge_resolved { border-color: var(--status-resolved-color); color: var(--status-resolved-color); }
+.statusBadge_archived { border-color: var(--status-archived-color); color: var(--status-archived-color); }
 
 .statusBadgeText {
   margin-top: -2px;
@@ -58,8 +71,15 @@
   width: 6px;
   height: 6px;
   border-radius: var(--radius-pill);
-  background: var(--status-active-color);
+  background: currentColor;
   flex-shrink: 0;
+}
+
+.statusChevron {
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+  flex-shrink: 0;
+  margin-left: 1px;
 }
 
 .topicMeta {
